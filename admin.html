@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة بوت الوظائف</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .section {
+            margin-bottom: 40px;
+            padding: 25px;
+            border: 2px solid #f0f0f0;
+            border-radius: 10px;
+            background: #fafafa;
+        }
+        
+        .section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            border-bottom: 2px solid #4facfe;
+            padding-bottom: 10px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+        }
+        
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        input[type="text"]:focus, textarea:focus {
+            outline: none;
+            border-color: #4facfe;
+        }
+        
+        .job-category {
+            background: white;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .job-category h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: transform 0.2s;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #2ed573 0%, #1e90ff 100%);
+        }
+        
+        .buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+        
+        .add-category {
+            background: #f8f9fa;
+            border: 2px dashed #ddd;
+            padding: 20px;
+            text-align: center;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .add-category:hover {
+            border-color: #4facfe;
+            background: #f0f8ff;
+        }
+        
+        .status {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .emoji-picker {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+            margin-top: 5px;
+        }
+        
+        .emoji-option {
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 5px;
+            transition: background 0.2s;
+        }
+        
+        .emoji-option:hover {
+            background: #f0f0f0;
+        }
+        
+        .emoji-option.selected {
+            background: #4facfe;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 إدارة بوت الوظائف</h1>
+            <p>عدّل إعدادات البوت بسهولة من خلال هذه الواجهة</p>
+        </div>
+        
+        <div class="content">
+            <div id="status"></div>
+            
+            <div class="section">
+                <h2>⚙️ إعدادات عامة</h2>
+                <div class="form-group">
+                    <label>رسالة الترحيب:</label>
+                    <textarea id="welcomeMessage" rows="3" placeholder="رسالة الترحيب التي تظهر للمستخدمين الجدد"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>رسالة الرقم غير الصحيح:</label>
+                    <input type="text" id="invalidNumberMessage" placeholder="رسالة عند إدخال رقم غير صحيح">
+                </div>
+                <div class="form-group">
+                    <label>عنوان قائمة الوظائف:</label>
+                    <input type="text" id="jobsMenuTitle" placeholder="عنوان القائمة الرئيسية">
+                </div>
+                <div class="form-group">
+                    <label>نص فرعي للقائمة:</label>
+                    <input type="text" id="jobsMenuSubtitle" placeholder="النص الفرعي تحت العنوان">
+                </div>
+                <div class="form-group">
+                    <label>تعليمات القائمة:</label>
+                    <input type="text" id="jobsMenuInstruction" placeholder="تعليمات للمستخدم">
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2>📋 فئات الوظائف</h2>
+                <div id="jobCategories"></div>
+                <div class="add-category" onclick="addJobCategory()">
+                    <h3>➕ إضافة فئة جديدة</h3>
+                    <p>اضغط هنا لإضافة فئة وظائف جديدة</p>
+                </div>
+            </div>
+            
+            <div class="buttons">
+                <button class="btn btn-success" onclick="saveSettings()">💾 حفظ الإعدادات</button>
+                <button class="btn" onclick="loadSettings()">🔄 إعادة تحميل</button>
+                <button class="btn btn-danger" onclick="resetSettings()">🔄 إعادة تعيين</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let settings = {
+            bot_settings: {
+                welcome_message: "",
+                invalid_number_message: "",
+                jobs_menu_title: "",
+                jobs_menu_subtitle: "",
+                jobs_menu_instruction: ""
+            },
+            job_categories: []
+        };
+
+        const emojis = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣', '🔟'];
+
+        // تحميل الإعدادات
+        async function loadSettings() {
+            try {
+                const response = await fetch('/api/settings');
+                if (response.ok) {
+                    settings = await response.json();
+                    updateForm();
+                    showStatus('تم تحميل الإعدادات بنجاح', 'success');
+                } else {
+                    throw new Error('فشل في تحميل الإعدادات');
+                }
+            } catch (error) {
+                showStatus('خطأ في تحميل الإعدادات: ' + error.message, 'error');
+            }
+        }
+
+        // حفظ الإعدادات
+        async function saveSettings() {
+            try {
+                // جمع البيانات من النموذج
+                collectFormData();
+                
+                const response = await fetch('/api/settings', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(settings)
+                });
+                
+                if (response.ok) {
+                    showStatus('تم حفظ الإعدادات بنجاح', 'success');
+                } else {
+                    throw new Error('فشل في حفظ الإعدادات');
+                }
+            } catch (error) {
+                showStatus('خطأ في حفظ الإعدادات: ' + error.message, 'error');
+            }
+        }
+
+        // جمع البيانات من النموذج
+        function collectFormData() {
+            settings.bot_settings.welcome_message = document.getElementById('welcomeMessage').value;
+            settings.bot_settings.invalid_number_message = document.getElementById('invalidNumberMessage').value;
+            settings.bot_settings.jobs_menu_title = document.getElementById('jobsMenuTitle').value;
+            settings.bot_settings.jobs_menu_subtitle = document.getElementById('jobsMenuSubtitle').value;
+            settings.bot_settings.jobs_menu_instruction = document.getElementById('jobsMenuInstruction').value;
+            
+            // جمع فئات الوظائف
+            settings.job_categories = [];
+            const categoryElements = document.querySelectorAll('.job-category');
+            categoryElements.forEach((element, index) => {
+                const category = {
+                    id: element.querySelector('.category-id').value,
+                    arabic_id: element.querySelector('.category-arabic-id').value,
+                    title: element.querySelector('.category-title').value,
+                    emoji: element.querySelector('.category-emoji').value,
+                    url: element.querySelector('.category-url').value,
+                    description: element.querySelector('.category-description').value
+                };
+                settings.job_categories.push(category);
+            });
+        }
+
+        // تحديث النموذج
+        function updateForm() {
+            document.getElementById('welcomeMessage').value = settings.bot_settings.welcome_message;
+            document.getElementById('invalidNumberMessage').value = settings.bot_settings.invalid_number_message;
+            document.getElementById('jobsMenuTitle').value = settings.bot_settings.jobs_menu_title;
+            document.getElementById('jobsMenuSubtitle').value = settings.bot_settings.jobs_menu_subtitle;
+            document.getElementById('jobsMenuInstruction').value = settings.bot_settings.jobs_menu_instruction;
+            
+            renderJobCategories();
+        }
+
+        // عرض فئات الوظائف
+        function renderJobCategories() {
+            const container = document.getElementById('jobCategories');
+            container.innerHTML = '';
+            
+            settings.job_categories.forEach((category, index) => {
+                container.appendChild(createJobCategoryElement(category, index));
+            });
+        }
+
+        // إنشاء عنصر فئة وظائف
+        function createJobCategoryElement(category, index) {
+            const div = document.createElement('div');
+            div.className = 'job-category';
+            div.innerHTML = `
+                <h3>فئة ${index + 1}</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>الرقم (إنجليزي):</label>
+                        <input type="text" class="category-id" value="${category.id}" placeholder="1">
+                    </div>
+                    <div class="form-group">
+                        <label>الرقم (عربي):</label>
+                        <input type="text" class="category-arabic-id" value="${category.arabic_id}" placeholder="١">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>العنوان:</label>
+                    <input type="text" class="category-title" value="${category.title}" placeholder="وظائف عسكرية">
+                </div>
+                <div class="form-group">
+                    <label>الإيموجي:</label>
+                    <input type="text" class="category-emoji" value="${category.emoji}" placeholder="1️⃣">
+                    <div class="emoji-picker">
+                        ${emojis.map(emoji => `<span class="emoji-option" onclick="selectEmoji(this, '${emoji}')">${emoji}</span>`).join('')}
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>الرابط:</label>
+                    <input type="text" class="category-url" value="${category.url}" placeholder="https://example.com">
+                </div>
+                <div class="form-group">
+                    <label>الوصف (إذا لم يكن هناك رابط):</label>
+                    <textarea class="category-description" rows="2" placeholder="وصف الفئة">${category.description}</textarea>
+                </div>
+                <button class="btn btn-danger" onclick="removeJobCategory(this)">🗑️ حذف الفئة</button>
+            `;
+            return div;
+        }
+
+        // إضافة فئة جديدة
+        function addJobCategory() {
+            const newCategory = {
+                id: (settings.job_categories.length + 1).toString(),
+                arabic_id: "",
+                title: "",
+                emoji: emojis[settings.job_categories.length] || "📋",
+                url: "",
+                description: ""
+            };
+            settings.job_categories.push(newCategory);
+            renderJobCategories();
+        }
+
+        // حذف فئة
+        function removeJobCategory(button) {
+            if (confirm('هل أنت متأكد من حذف هذه الفئة؟')) {
+                button.closest('.job-category').remove();
+            }
+        }
+
+        // اختيار إيموجي
+        function selectEmoji(element, emoji) {
+            // إزالة التحديد من جميع الإيموجي
+            element.parentElement.querySelectorAll('.emoji-option').forEach(el => {
+                el.classList.remove('selected');
+            });
+            
+            // تحديد الإيموجي المختار
+            element.classList.add('selected');
+            
+            // تحديث حقل الإيموجي
+            element.closest('.job-category').querySelector('.category-emoji').value = emoji;
+        }
+
+        // إعادة تعيين الإعدادات
+        async function resetSettings() {
+            if (confirm('هل أنت متأكد من إعادة تعيين جميع الإعدادات؟')) {
+                try {
+                    const response = await fetch('/api/settings/reset', { method: 'POST' });
+                    if (response.ok) {
+                        await loadSettings();
+                        showStatus('تم إعادة تعيين الإعدادات بنجاح', 'success');
+                    } else {
+                        throw new Error('فشل في إعادة تعيين الإعدادات');
+                    }
+                } catch (error) {
+                    showStatus('خطأ في إعادة تعيين الإعدادات: ' + error.message, 'error');
+                }
+            }
+        }
+
+        // عرض رسالة حالة
+        function showStatus(message, type) {
+            const statusDiv = document.getElementById('status');
+            statusDiv.className = `status ${type}`;
+            statusDiv.textContent = message;
+            
+            setTimeout(() => {
+                statusDiv.textContent = '';
+                statusDiv.className = 'status';
+            }, 5000);
+        }
+
+        // تحميل الإعدادات عند بدء التطبيق
+        document.addEventListener('DOMContentLoaded', loadSettings);
+    </script>
+</body>
+</html> 

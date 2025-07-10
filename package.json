@@ -4,12 +4,20 @@
   "description": "واتساب بوت للوظائف",
   "main": "project.js",
   "scripts": {
-    "start": "node project.js"
+    "start": "node project.js",
+    "admin": "node admin-server.js",
+    "dev": "concurrently \"npm run start\" \"npm run admin\""
   },
   "dependencies": {
     "@adiwajshing/keyed-db": "^0.2.4",
     "@hapi/boom": "^10.0.1",
-    "@whiskeysockets/baileys": "^6.4.0",
-    "qrcode-terminal": "^0.12.0"
-  }
+    "@whiskeysockets/baileys": "^6.7.18",
+    "concurrently": "^8.2.2",
+    "express": "^4.18.2",
+    "qrcode-terminal": "^0.12.0",
+    "cors": "^2.8.5"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
 }

@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: whatsapp-bot-admin
+    env: node
+    buildCommand: npm install
+    startCommand: npm run admin
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+
+  - type: worker
+    name: whatsapp-bot
+    env: node
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production 
